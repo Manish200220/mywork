@@ -1,0 +1,5 @@
+{
+    "liveServer.settings.CustomBrowser": "chrome",
+    "csharp.debug.symbolOptions.searchMicrosoftSymbolServer": false,
+    "cursor-retrieval.canAttemptGithubLogin": false
+}
