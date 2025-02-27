@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Example</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 40px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .dropdown-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        select {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            width: 250px;
+            border: 2px solid #e0e0e0;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: #3498db;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52,152,219,0.3);
+        }
+
+        option {
+            padding: 10px;
+        }
+
+        /* Add new styles for the text input */
+        .custom-input {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            width: 250px;
+            border: 2px solid #e0e0e0;
+            background-color: white;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52,152,219,0.3);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .back-button {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: none;
+            font-size: 14px;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dropdown Menu Example</h1>
+    
+    <div class="dropdown-container">
+        <label for="dropdown">Choose an option:</label>
+        <div class="input-wrapper">
+            <select id="dropdown" name="dropdown">
+                <option value="" disabled selected>Select an option</option>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+                <option value="option4">Option 4</option>
+                <option value="custom">Custom Option</option>
+            </select>
+            <input type="text" id="customInput" class="custom-input" placeholder="Enter custom value">
+            <button type="button" id="backButton" class="back-button" title="Back to dropdown">↩</button>
+        </div>
+    </div>
+
+    <script>
+        const dropdown = document.getElementById('dropdown');
+        const customInput = document.getElementById('customInput');
+        const backButton = document.getElementById('backButton');
+
+        dropdown.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                this.style.display = 'none';
+                customInput.style.display = 'block';
+                backButton.style.display = 'block';
+                customInput.focus();
+            }
+        });
+
+        backButton.addEventListener('click', function() {
+            customInput.style.display = 'none';
+            backButton.style.display = 'none';
+            dropdown.style.display = 'block';
+            dropdown.value = '';
+        });
+
+        customInput.addEventListener('blur', function(e) {
+            // Only hide if clicking outside both the input and back button
+            if (!e.relatedTarget || e.relatedTarget.id !== 'backButton') {
+                if (this.value.trim() === '') {
+                    this.style.display = 'none';
+                    backButton.style.display = 'none';
+                    dropdown.style.display = 'block';
+                    dropdown.value = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

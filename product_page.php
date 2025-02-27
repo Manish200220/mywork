@@ -565,11 +565,12 @@ include 'header.php';
 }
 
 .quantity-selector {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     border: 1px solid #dfe6e9;
     border-radius: 25px;
     overflow: hidden;
+    margin-right: 10px;
 }
 
 .qty-btn {
@@ -578,21 +579,35 @@ include 'header.php';
     padding: 10px 15px;
     cursor: pointer;
     color: #2d3436;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .qty-input {
     width: 50px;
     border: none;
     text-align: center;
+    font-size: 14px;
+    color: #2d3436;
+    padding: 5px;
 }
 
-.add-to-cart-btn, .buy-now-btn {
-    padding: 12px 30px;
+.add-to-cart-btn,
+.buy-now-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
     border: none;
     border-radius: 25px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
+    text-align: center;
+    min-width: 140px;
+    font-size: 14px;
 }
 
 .add-to-cart-btn {
@@ -600,14 +615,23 @@ include 'header.php';
     color: white;
 }
 
-.buy-to-cart-btn {
+.buy-now-btn {
     background: #2d3436;
     color: white;
 }
 
-.add-to-cart-btn:hover, .buy-now-btn:hover {
+.add-to-cart-btn:hover,
+.buy-now-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.add-to-cart-btn:hover {
+    background: #93b233;
+}
+
+.buy-now-btn:hover {
+    background: #1e2527;
 }
 
 @media (max-width: 992px) {
@@ -1575,6 +1599,28 @@ include 'header.php';
     font-weight: 500;
     color: #2d3436;
 }
+
+/* Remove underlines from all links */
+a {
+    text-decoration: none;
+}
+
+/* Specific link styles */
+.pp-cat-link,
+.pp-subcat-link,
+.pp-prod-link,
+.pp-view-details,
+.product-link,
+.hero-link,
+.product-detail-link {
+    text-decoration: none;
+    color: inherit;  /* This will keep the original text color */
+}
+
+/* Ensure hover states don't add underlines */
+a:hover {
+    text-decoration: none;
+}
 </style>
 
 <script>
@@ -1908,5 +1954,143 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial sort (if needed)
     sortProducts('low-high'); // or whatever default sort you want
+
+    // Category and Subcategory click handling
+    document.querySelectorAll('.pp-cat-link, .pp-subcat-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Prevent default behavior and store scroll position
+            e.preventDefault();
+            e.stopPropagation();
+            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (this.classList.contains('pp-cat-link')) {
+                // Main category click
+                const categoryItem = this.parentElement;
+                categoryItem.classList.toggle('active');
+                
+                // Get main category name
+                const mainCategory = this.textContent.trim().split('(')[0].trim();
+                
+                // If category is being opened (not closed)
+                if (categoryItem.classList.contains('active')) {
+                    setTimeout(() => {
+                        filterProductsByMainCategory(mainCategory);
+                        window.scrollTo(0, scrollPos);
+                    }, 0);
+                }
+            } else {
+                // Subcategory click
+                const mainCategoryLink = this.closest('.pp-cat-item').querySelector('.pp-cat-link');
+                const mainCategory = mainCategoryLink.textContent.trim().split('(')[0].trim();
+                const subCategory = this.textContent.trim().split('(')[0].trim();
+                
+                // Toggle active state for subcategory
+                document.querySelectorAll('.pp-subcat-link').forEach(subLink => {
+                    subLink.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Filter products by both main and subcategory
+                setTimeout(() => {
+                    filterProductsBySubcategory(mainCategory, subCategory);
+                    window.scrollTo(0, scrollPos);
+                }, 0);
+            }
+            
+            return false;
+        }, { passive: false });
+    });
+    
+    function filterProductsByMainCategory(mainCategory) {
+        const productCards = document.querySelectorAll('.pp-product-card');
+        let visibleCount = 0;
+        
+        productCards.forEach(card => {
+            const cardCategory = card.querySelector('.pp-category').textContent.trim();
+            
+            if (cardCategory === mainCategory) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('visible-count').textContent = visibleCount;
+    }
+
+    function filterProductsBySubcategory(mainCategory, subCategory) {
+        const productCards = document.querySelectorAll('.pp-product-card');
+        let visibleCount = 0;
+        
+        productCards.forEach(card => {
+            const cardCategory = card.querySelector('.pp-category').textContent.trim();
+            const cardSubcategory = card.querySelector('.pp-subcategory').textContent.trim();
+            
+            if (cardCategory === mainCategory && cardSubcategory === subCategory) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('visible-count').textContent = visibleCount;
+    }
+
+    // Add a function to reset filters
+    function resetFilters() {
+        const productCards = document.querySelectorAll('.pp-product-card');
+        productCards.forEach(card => {
+            card.style.display = '';
+        });
+        document.getElementById('visible-count').textContent = productCards.length;
+        
+        // Reset active states
+        document.querySelectorAll('.pp-cat-link, .pp-subcat-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        document.querySelectorAll('.pp-cat-item').forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+
+    // Add reset functionality to category collapse
+    document.querySelectorAll('.pp-cat-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const categoryItem = link.parentElement;
+            if (!categoryItem.classList.contains('active')) {
+                resetFilters();
+            }
+        });
+    });
+
+    // Update other click handlers to prevent scroll jump
+    document.querySelectorAll('.pp-quick-filter, .pp-range-min, .pp-range-max, .pp-bv-range').forEach(element => {
+        element.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        element.addEventListener('input', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+    // Prevent scroll on filter interactions
+    const preventScroll = (e) => {
+        const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+        setTimeout(() => {
+            window.scrollTo(0, scrollPos);
+        }, 0);
+    };
+
+    // Apply prevent scroll to all filter elements
+    document.querySelectorAll('.pp-quick-filter, .pp-range-min, .pp-range-max, .pp-bv-range, #price-min, #price-max, #bv-input').forEach(element => {
+        element.addEventListener('click', preventScroll, { passive: false });
+        element.addEventListener('input', preventScroll, { passive: false });
+        element.addEventListener('change', preventScroll, { passive: false });
+    });
 });
 </script> 
