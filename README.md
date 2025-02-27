@@ -18,7 +18,6 @@ A personal e-commerce website built with PHP, featuring product management, shop
 - Shopping cart functionality
 - Order management system
 - Admin dashboard
-- Payment integration
 - Responsive design
 
 ## Prerequisites
