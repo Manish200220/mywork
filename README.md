@@ -78,7 +78,7 @@ A personal e-commerce website built with PHP, featuring product management, shop
 - Password hashing using bcrypt
 - Protection against SQL injection
 - CSRF protection
-- XSS prevention
+- XSS preventionffgf
 
 ## Maintenance
 - Regular backups of database
